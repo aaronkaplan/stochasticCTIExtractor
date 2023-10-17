@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+openai
+langchain[llms]
+python-dotenv
+tiktoken
+pytest
+python-magic
+selenium
+beautifulsoup4
+requests-mock
