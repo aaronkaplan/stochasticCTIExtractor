@@ -17,18 +17,11 @@ from langchain.prompts import PromptTemplate
 from langchain.output_parsers import ResponseSchema
 from langchain.output_parsers import StructuredOutputParser
 from langchain.chains.summarize import load_summarize_chain
-# from langchain.text_splitter import CharacterTextSplitter
-# from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.text_splitter import TokenTextSplitter
-# from langchain.docstore.document import Document
 from langchain.document_loaders.text import TextLoader
-# from langchain.document_loaders import BSHTMLLoader
-# from langchain.chains.summarize import load_summarize_chain
-# from langchain.chains import LLMChain
-# from langchain.chains.mapreduce import MapReduceChain
 from langchain.prompts import PromptTemplate
 
-from app.misc import save_string_to_custom_temp_file
+from misc import save_string_to_custom_temp_file
 
 
 debug = True
@@ -47,7 +40,7 @@ if USE_AZURE:
     MAXLEN=32000
 else:
     ENGINE=None
-    MODEL="gpt-3.5-16k"
+    MODEL="gpt-3.5-turbo"
     # MODEL="llama2"
 
 
@@ -128,7 +121,7 @@ class Summarizer():
         if USE_AZURE:
             self.llm = AzureOpenAI ( deployment_name=os.environ['ENGINE'], temperature=0.0)
         else:
-            self.llm = ChatOpenAI(temperature=0.0)
+            self.llm = ChatOpenAI(model=self.model, temperature=0.0)
         # self.llm = TextGen(model_url=os.environ['OPENAI_API_BASE'])
         self.memory = ConversationBufferMemory()
         self.conversation = ConversationChain(
@@ -216,5 +209,5 @@ class Summarizer():
         
             return dict(output_parser.parse(response['output_text']))
         except Exception as ex:
-            print(f"An error occurred with link {link}. Error: {str(ex)}")
+            print(f"An error occurred with input '{text[30:]}'. Error: {str(ex)}")
             return {"error": str(ex)}

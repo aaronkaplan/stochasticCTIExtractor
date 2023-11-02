@@ -1,7 +1,8 @@
 fastapi
 uvicorn
 openai
-langchain[llms]
+#langchain[llms]
+langchain
 python-dotenv
 tiktoken
 pytest

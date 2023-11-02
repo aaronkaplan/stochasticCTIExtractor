@@ -1,0 +1,56 @@
+version: "3"
+services:
+  # traefik reverse proxy
+  traefik:
+    image: traefik:v2.4
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=aaron+letsencrypt@lo-res.org"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+    networks:
+      - web
+    labels:
+      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.global.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.global.middlewares=redirect-https"
+      - "traefik.http.routers.global.entrypoints=web"
+
+  # The main microservice, serving the OpenAI based meeting minutes xscriber
+  #
+  stochastic_alex:
+    image: stochastic_alex:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PYTHON_PATH: /app
+    env_file: .env
+    ports:
+      - "9090:9090"
+    dns: 8.8.8.8
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.xscriber.rule=Host(`misp-llm.lo-res.org`)"
+      - "traefik.http.routers.xscriber.entrypoints=websecure"
+      - "traefik.http.routers.xscriber.tls.certresolver=myresolver"
+      - "traefik.http.services.xscriber.loadbalancer.server.port=9090"
+    volumes:
+      - "./app:/app"  # map /uploads from host to /tmp in the container
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

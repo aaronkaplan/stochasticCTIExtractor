@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from app.summarizer import Summarizer
+from summarizer import Summarizer
 
 
 app = FastAPI(title="Stochastic Alex")
