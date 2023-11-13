@@ -1,7 +1,6 @@
 # stochastic_alex
 Interface LLMs from within MISP to extract TTPs and threat intel from CTI reports
 
-Origin of the name: [Alex the parrot](https://en.wikipedia.org/wiki/Alex_(parrot)) is a [stochastic parrot](https://en.wikipedia.org/wiki/Stochastic_parrot)
 
 
 This RESTful API service accepts markdown text as input. It expects that the text was a CTI report  (some blog post or so ) and cleaned (i.e. no links, advertisement etc in it).
