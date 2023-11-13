@@ -1,4 +1,4 @@
-# stochastic_alex
+# Stochastic CTI Extractor
 Interface LLMs from within MISP to extract TTPs and threat intel from CTI reports
 
 
